@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class UsersController < ProtectedController
+class UsersController < OpenReadController
   skip_before_action :authenticate, only: %i[signup signin]
 
   # POST '/sign-up'
@@ -30,6 +30,18 @@ class UsersController < ProtectedController
     head :no_content
   end
 
+  def index
+    @users = User.all
+    render json: @users
+  end
+
+  def show
+    @user = User.find(params[:id])
+    render json: @user
+
+
+  end
+
   # PATCH '/change-password/:id'
   def changepw
     # if the the old password authenticates,
@@ -50,7 +62,7 @@ class UsersController < ProtectedController
 
   def user_creds
     params.require(:credentials)
-          .permit(:email, :password, :password_confirmation)
+          .permit(:id, :email, :password, :password_confirmation)
   end
 
   def pw_creds
